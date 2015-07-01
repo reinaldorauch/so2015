@@ -30,7 +30,7 @@ menu() {
     separator
     echo "Digite uma das opções de ação:"
     echo "01. Listar determinado diretório" # DONE
-    echo "02. Copiar um determinado arquivo"
+    echo "02. Copiar um determinado arquivo" # DONE @todo make the dest validation
     echo "03. Mover um arquivo"
     echo "04. Renomear um arquivo"
     echo "05. Verificar diretório atual"
@@ -47,6 +47,7 @@ menu() {
 comando() {
     case "$OPTION" in
         "01" | "1" ) execListDir;;
+        "02" | "2" ) execCopyFile;;
     esac
 }
 
@@ -70,7 +71,26 @@ execListDir() {
     separator
 }
 
-
+execCopyFile() {
+    separator
+    echo "Escolhido copiar um arquivo."
+    echo "Digite o path para o arquivo de origem:"
+    read ORIG
+    echo "Digite o path para a pasta de destino:"
+    read DEST
+    separator
+    if [ -f "$ORIG" ]
+    then
+        cp "$ORIG" "$DEST"
+        echo "Copied file with success"
+    elif [ -e "$ORIG" ]
+    then
+        echo "Erro: o arquivo de origem não é um arquivo acessivos"
+    elif [ -n -d "$DEST" ]
+    then
+        echo "Erro: o diretório de destino não é um diretório acessivo"
+    fi
+}
 
 while [[ "$OPTION" -ne 11 ]]
 do
