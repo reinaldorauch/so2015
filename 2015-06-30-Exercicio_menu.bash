@@ -18,11 +18,18 @@
 #
 
 OPTION=0
+ARGS=""
+
+separator() {
+    echo "---------------------------------------------------------------------"
+}
 
 menu() {
+    separator
     echo "Executador de comandos"
+    separator
     echo "Digite uma das opções de ação:"
-    echo "01. Listar determinado diretório"
+    echo "01. Listar determinado diretório" # DONE
     echo "02. Copiar um determinado arquivo"
     echo "03. Mover um arquivo"
     echo "04. Renomear um arquivo"
@@ -33,6 +40,7 @@ menu() {
     echo "09. Remover um arquivo"
     echo "10. Listar terminais abertos"
     echo "11. Sair do programa"
+    separator
     read OPTION
 }
 
@@ -41,6 +49,28 @@ comando() {
         "01" | "1" ) execListDir;;
     esac
 }
+
+aditionalArguments() {
+    ARGS=""
+    echo "Se quiser passar mais argumentos, digite-os agora:"
+    read ARGS
+}
+
+execListDir() {
+    separator
+    echo "Escolhido listar conteúdo de determinado diretório."
+    echo "Digite o diretório a ser listado. Deixe vazio para o atual:"
+    read LSDIR
+
+    aditionalArguments
+
+    echo ""
+    separator
+    ls $ARGS $LSDIR
+    separator
+}
+
+
 
 while [[ "$OPTION" -ne 11 ]]
 do
