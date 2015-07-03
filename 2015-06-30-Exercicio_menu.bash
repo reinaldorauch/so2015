@@ -52,9 +52,13 @@ menu() {
     echo "06. Alterar diretório atual"
     # DONE
     echo "07. Mostrar conteúdo de um arquivo"
+    # @todo Perguntar contar do que
     echo "08. Contar palavras, letras ou linhas"
+    # DONE
     echo "09. Remover um arquivo"
-    echo "10. Listar terminais abertos"
+    # DONE
+    echo "10. Listar processos"
+    # DONE
     echo "11. Sair do programa"
     separator
     read OPTION
@@ -72,6 +76,9 @@ comando() {
         "05" | "5" ) execShowCurrentDir;;
         "06" | "6" ) execChangeCurrentDir;;
         "07" | "7" ) execCatFile;;
+        "08" | "8" ) execWordsLettersLines;;
+        "09" | "9" ) execRmFile;;
+        "10"       ) execListOpenTTY;;
     esac
 }
 
@@ -218,6 +225,47 @@ execCatFile() {
   else
     echo "Arquivo inválido"
   fi
+  separator
+}
+
+#
+# Conta linhas, palavras ou letras
+#
+execWordsLettersLines() {
+  separator
+  echo "Escolhido ação de contar palavras, linhas ou letras."
+  echo "Não está implementado ainda"
+  separator
+}
+
+#
+# Remove um determinado arquivo
+#
+execRmFile() {
+  separator
+  echo "Escolhido ação de remover um arquivo."
+  echo "Digite o arquivo a ser removido:"
+  read RMFILE
+
+  if [[ -f "$RMFILE" ]]; then
+    rm $RMFILE
+    echo "Arquivo removido"
+  else
+    echo "Arquivo inválido"
+  fi
+  separator
+}
+
+#
+# Lista os terminais abertos
+#
+execListOpenTTY() {
+  separator
+  echo "Escolhido ação de listar os processos abertos"
+  echo "Digite argumentos para alterar a listagem dos processos:"
+  read ARGS
+
+  ps $ARGS | less
   separator
 }
 
