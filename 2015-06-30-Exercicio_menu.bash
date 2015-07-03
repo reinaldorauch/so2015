@@ -20,10 +20,16 @@
 OPTION=0
 ARGS=""
 
+#
+# Escreve uma linha separadora
+#
 separator() {
     echo "---------------------------------------------------------------------"
 }
 
+#
+# Escreve o menu do programa
+#
 menu() {
     separator
     echo "Executador de comandos"
@@ -44,6 +50,9 @@ menu() {
     read OPTION
 }
 
+#
+# Decide o comando a ser executado
+#
 comando() {
     case "$OPTION" in
         "01" | "1" ) execListDir;;
@@ -51,12 +60,18 @@ comando() {
     esac
 }
 
+#
+# Captura argumentos adicionais ao programa
+#
 aditionalArguments() {
     ARGS=""
     echo "Se quiser passar mais argumentos, digite-os agora:"
     read ARGS
 }
 
+#
+# Executa o comando de listar o diretório atual ou um indicado pelo usuário
+#
 execListDir() {
     separator
     echo "Escolhido listar conteúdo de determinado diretório."
@@ -71,6 +86,9 @@ execListDir() {
     separator
 }
 
+#
+# Executa o comando de copiar um arquivo
+#
 execCopyFile() {
     separator
     echo "Escolhido copiar um arquivo."
@@ -92,6 +110,7 @@ execCopyFile() {
     fi
 }
 
+# Executa o programa enquando a opção escolhida não for 11 (saída do programa)
 while [[ "$OPTION" -ne 11 ]]
 do
     menu
