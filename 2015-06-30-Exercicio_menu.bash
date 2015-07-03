@@ -62,6 +62,7 @@ comando() {
     case "$OPTION" in
         "01" | "1" ) execListDir;;
         "02" | "2" ) execCopyFile;;
+        "03" | "3" ) execMoveFile;;
     esac
 }
 
@@ -113,6 +114,31 @@ execCopyFile() {
     then
         echo "Erro: o diretório de destino não é um diretório acessivo"
     fi
+}
+
+#
+# Executa a ação de mover um determinado arquivo
+#
+execMoveFile() {
+  separator
+  echo "Escolhido ação de mover arquivo."
+  echo "Digite o path do arquivo que deseja mover:"
+  read MVFILE
+  echo "Digite o caminho para a pasta de destino do arquivo:"
+  read DEST
+
+  if [ -f "$MVFILE" ]
+  then
+    if [ -d "$DEST" ]
+    then
+      mv $MVFILE $DEST
+      echo "Arquivo movido com sucesso"
+    else
+      echo "Erro: não é um destino válido"
+    fi
+  else
+    echo "Não é um arquivo válido"
+  fi
 }
 
 # Executa o programa enquando a opção escolhida não for 11 (saída do programa)
