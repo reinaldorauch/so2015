@@ -42,7 +42,9 @@ menu() {
     echo "01. Listar determinado diretório"
     # DONE @todo make the dest validation
     echo "02. Copiar um determinado arquivo"
+    # DONE
     echo "03. Mover um arquivo"
+    # Done
     echo "04. Renomear um arquivo"
     echo "05. Verificar diretório atual"
     echo "06. Alterar diretório atual"
@@ -63,6 +65,7 @@ comando() {
         "01" | "1" ) execListDir;;
         "02" | "2" ) execCopyFile;;
         "03" | "3" ) execMoveFile;;
+        "04" | "4" ) execRenameFile;;
     esac
 }
 
@@ -140,6 +143,25 @@ execMoveFile() {
     echo "Não é um arquivo válido"
   fi
 }
+
+#
+# Executa a ação do menu de renomear um arquivo
+#
+execRenameFile() {
+  echo "Escolhido a ação de renomear um arquivo."
+  echo "Digite o nome original do arquivo para renomear:"
+  read MVORIG
+  echo "Digite o nome para qual você deseja que o arquivo receba:"
+  read MVDEST
+
+  if [ -f "$MVORIG" ]
+  then
+    mv $MVORIG $MVDEST
+    echo "Arquivo renomeado com sucesso"
+  fi
+}
+
+
 
 # Executa o programa enquando a opção escolhida não for 11 (saída do programa)
 while [[ "$OPTION" -ne 11 ]]
