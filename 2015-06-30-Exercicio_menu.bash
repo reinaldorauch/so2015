@@ -66,6 +66,7 @@ comando() {
         "02" | "2" ) execCopyFile;;
         "03" | "3" ) execMoveFile;;
         "04" | "4" ) execRenameFile;;
+        "05" | "5" ) execShowCurrentDir;;
     esac
 }
 
@@ -117,6 +118,7 @@ execCopyFile() {
     then
         echo "Erro: o diretório de destino não é um diretório acessivo"
     fi
+    separator
 }
 
 #
@@ -142,12 +144,14 @@ execMoveFile() {
   else
     echo "Não é um arquivo válido"
   fi
+  separator
 }
 
 #
 # Executa a ação do menu de renomear um arquivo
 #
 execRenameFile() {
+  separator
   echo "Escolhido a ação de renomear um arquivo."
   echo "Digite o nome original do arquivo para renomear:"
   read MVORIG
@@ -159,11 +163,23 @@ execRenameFile() {
     mv $MVORIG $MVDEST
     echo "Arquivo renomeado com sucesso"
   fi
+  separator
 }
 
+#
+# Mostra o diretório atual do programa
+#
+execShowCurrentDir() {
+  separator
+  echo "Escolhido a ação de mostrar na tela o diretório atual."
+  echo "O diretório atual é:"
+  echo ""
+  pwd
+  echo ""
+  separator
+}
 
-
-# Executa o programa enquando a opção escolhida não for 11 (saída do programa)
+# Executa o programa enquando a opção escolhida não for 11 "saída do programa"
 while [[ "$OPTION" -ne 11 ]]
 do
     menu
