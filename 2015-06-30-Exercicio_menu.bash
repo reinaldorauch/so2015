@@ -17,7 +17,10 @@
 # sair do programa
 #
 
+# Variável global para a escolha do programa
 OPTION=0
+# Variável global para gudardar os argumentos extras definidos para o comando
+# atual
 ARGS=""
 
 #
@@ -35,8 +38,10 @@ menu() {
     echo "Executador de comandos"
     separator
     echo "Digite uma das opções de ação:"
-    echo "01. Listar determinado diretório" # DONE
-    echo "02. Copiar um determinado arquivo" # DONE @todo make the dest validation
+    # DONE
+    echo "01. Listar determinado diretório"
+    # DONE @todo make the dest validation
+    echo "02. Copiar um determinado arquivo"
     echo "03. Mover um arquivo"
     echo "04. Renomear um arquivo"
     echo "05. Verificar diretório atual"
