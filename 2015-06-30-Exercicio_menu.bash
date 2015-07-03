@@ -44,9 +44,11 @@ menu() {
     echo "02. Copiar um determinado arquivo"
     # DONE
     echo "03. Mover um arquivo"
-    # Done
+    # DONE
     echo "04. Renomear um arquivo"
+    # DONE
     echo "05. Verificar diretório atual"
+    # DONE
     echo "06. Alterar diretório atual"
     echo "07. Mostrar conteúdo de um arquivo"
     echo "08. Contar palavras, letras ou linhas"
@@ -67,6 +69,7 @@ comando() {
         "03" | "3" ) execMoveFile;;
         "04" | "4" ) execRenameFile;;
         "05" | "5" ) execShowCurrentDir;;
+        "06" | "6" ) execChangeCurrentDir;;
     esac
 }
 
@@ -176,6 +179,25 @@ execShowCurrentDir() {
   echo ""
   pwd
   echo ""
+  separator
+}
+
+#
+# Muda o diretório de trabalho atual
+#
+execChangeCurrentDir() {
+  separator
+  echo "Escolhido ação de alterar o diretório de trabalho"
+  echo "Digite o diretório para que deseja mudar:"
+  read DESTDIR
+
+  if [ -d "$DESTDIR" ]
+  then
+    cd $DESTDIR
+    echo "Diretório de trabalho alterado com sucesso"
+  else
+    echo 'Diretório inválido'
+  fi
   separator
 }
 
