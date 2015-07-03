@@ -50,6 +50,7 @@ menu() {
     echo "05. Verificar diretório atual"
     # DONE
     echo "06. Alterar diretório atual"
+    # DONE
     echo "07. Mostrar conteúdo de um arquivo"
     echo "08. Contar palavras, letras ou linhas"
     echo "09. Remover um arquivo"
@@ -70,6 +71,7 @@ comando() {
         "04" | "4" ) execRenameFile;;
         "05" | "5" ) execShowCurrentDir;;
         "06" | "6" ) execChangeCurrentDir;;
+        "07" | "7" ) execCatFile;;
     esac
 }
 
@@ -187,7 +189,7 @@ execShowCurrentDir() {
 #
 execChangeCurrentDir() {
   separator
-  echo "Escolhido ação de alterar o diretório de trabalho"
+  echo "Escolhido ação de alterar o diretório de trabalho."
   echo "Digite o diretório para que deseja mudar:"
   read DESTDIR
 
@@ -197,6 +199,24 @@ execChangeCurrentDir() {
     echo "Diretório de trabalho alterado com sucesso"
   else
     echo 'Diretório inválido'
+  fi
+  separator
+}
+
+#
+# Mostra o conteúdo de um arquivo na tela
+#
+execCatFile() {
+  separator
+  echo "Escolhido ação de mostrar um arquivo na tela."
+  echo "Digite o arquivo que deseja imprimir:"
+  read READFILE
+
+  if [ -f "$READFILE" ]
+  then
+    less < $READFILE
+  else
+    echo "Arquivo inválido"
   fi
   separator
 }
