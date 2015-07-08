@@ -272,6 +272,6 @@ execListOpenTTY() {
 # Executa o programa enquando a opção escolhida não for 11 "saída do programa"
 while [[ "$OPTION" -ne 11 ]]
 do
-    menu
-    comando
+  menu
+  comando
 done
