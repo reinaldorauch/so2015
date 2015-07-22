@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void runMain(int p, int c) {
     printf("Eu sou o pai (%d), o meu filho (%d)\n", p, c);
