@@ -50,9 +50,6 @@ double jobRun() {
     // Timers
     struct timeval tempo1, tempo2;
 
-    // Para guardar o tempo de execução
-    double tempo;
-
     // Captura o timestamp na ao começar a execução do job
     gettimeofday(&tempo1, NULL);
 
@@ -63,9 +60,7 @@ double jobRun() {
     gettimeofday(&tempo2, NULL);
 
     // Calcula o tempo de execução e mostra
-    printf("Tempo: %f\n", tempo = getDiffTime(tempo1, tempo2));
-
-    return tempo;
+    return getDiffTime(tempo1, tempo2);
 }
 
 /**
@@ -73,12 +68,12 @@ double jobRun() {
  */
 void calcMedia() {
     // Guarda a soma
-    double sum;
+    double sum = 0;
     // Guarda um resultado
     double resRead;
 
     // Itera sobre o número de resultados esperados
-    for(int i = 0; i < MAX_FORK; i++) {
+    for(int i = 0; i <= MAX_FORK; i++) {
         // Lê um resultado do pipe
         read(resultPipe[0], &resRead, sizeof(resRead));
         printf("%f\n", resRead);
@@ -91,7 +86,7 @@ void calcMedia() {
     close(resultPipe[1]);
 
     // Imprime a média
-    printf("Média: %.10f\n", sum / (double) MAX_FORK);
+    printf("Média: %.10f\n", sum / (double) (MAX_FORK + 1));
 }
 
 /**
