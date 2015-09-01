@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <iostream>
 
 using namespace std;
@@ -10,14 +9,15 @@ using namespace std;
  */
 #define PID_NULL 0
 
-struct void {
+struct stvoid {
   unsigned init;
   unsigned end;
   unsigned size;
-  struct void *next;
+  struct stvoid *left;
+  struct stvoid *right;
 };
 
-typedef struct void t_void;
+typedef struct stvoid t_void;
 
 /**
  * Memórias para tipos diferentes de alocação de memória
@@ -156,6 +156,12 @@ void firstFit(unsigned pid, unsigned size) {
       if(*(ff + i) == PID_NULL) {
         init = i;
         end = 1;
+
+        if(size == 1) {
+          end = i;
+          found = 1;
+          break;
+        }
       }
     } else {
       end++;
@@ -187,7 +193,9 @@ void firstFit(unsigned pid, unsigned size) {
  * @return       ponteiros à lista de voids
  */
 t_void *pushVoids(t_void *voids, unsigned init, unsigned end) {
-  t_void *newVoid = (t_void*) calloc(1, sizeof(t_void)), actualVoid = NULL;
+  t_void *newVoid = (t_void*) calloc(1, sizeof(t_void)),
+    *actualVoid = NULL,
+    *lastVoid = NULL;
 
   if(newVoid == NULL) {
     puts("Erro ao procurar os buracos");
@@ -197,52 +205,72 @@ t_void *pushVoids(t_void *voids, unsigned init, unsigned end) {
   newVoid->init = init;
   newVoid->end = end;
   newVoid->size = end - init + 1;
-  newVoid->next = NULL;
+  newVoid->right = newVoid->left = NULL;
 
   if(voids == NULL) {
     voids = newVoid;
   } else {
     actualVoid = voids;
-    while(actualVoid->next == NULL) {
-      actualVoid = actualVoid->next;
+    while(actualVoid != NULL) {
+      lastVoid = actualVoid;
+      if(newVoid->size <= actualVoid->size) {
+        actualVoid = actualVoid->left;
+      } else if(newVoid->size > actualVoid->size) {
+        actualVoid = actualVoid->right;
+      }
     }
 
-    actualVoid->next = newVoid;
+    if(newVoid->size <= lastVoid->size) {
+      lastVoid->left = newVoid;
+    } else {
+      lastVoid->right = newVoid;
+    }
   }
 
   return voids;
 }
 
-void sortVoids(t_void *voids, t_void *lo, t_void *hi) {
-  pa
-
-  if(lo->size < hi->size) {
-
-  }
-
-}
-
-t_void *getLowest(t_void *voids) {
-  t_void *actual = voids;
-  unsigned lowest = voids->size;
-
-  while(actual->next != NULL) {
-    if(actual->size < lowest) {
-      lowest = actual->size;
-    }
-
-    actual = actual->next;
-  }
-
-  return actual;
-}
-
+/**
+ * Pega o melhor buraco para encaixar o processo
+ * @param  voids Árvore de buracos
+ * @param  size  Tamanho do processo a ser encaixado
+ * @return       Buraco para ser colocado
+ */
 t_void *getBestMatch(t_void *voids, unsigned size) {
-  sortVoids(voids, getLowest(voids), getBiggest(voids));
+  t_void *actual = voids, *last = NULL;
 
-  t_void *actual = voids;
+  if(actual == NULL) {
+    return NULL;
+  }
 
+  while(actual != NULL) {
+    last = actual;
+    if(size <= actual->size) {
+      actual = actual->left;
+    } else if(size > actual->size) {
+      actual = actual->right;
+    }
+  }
 
+  if(size <= last->size) {
+    return last;
+  } else {
+    return NULL;
+  }
+}
+
+/**
+ * Libera memória dos voids
+ * @param voids ponteiro para a árvore
+ */
+void freeVoids(t_void *voids) {
+  if(voids == NULL) {
+    return;
+  }
+
+  freeVoids(voids->left);
+  freeVoids(voids->right);
+  free(voids);
 }
 
 /**
@@ -259,17 +287,14 @@ void bestFit(unsigned pid, unsigned size) {
   for (int i = 0; i < memAllocated; i++)
   {
     if(init == -1) {
-      if(*(ff + i) == PID_NULL) {
+      if(*(bf + i) == PID_NULL) {
         init = i;
         end = 1;
       }
     } else {
       end++;
-      if(end == size) {
-        end = i;
-        found = 1;
-        break;
-      } else if(*(ff + i) != PID_NULL) {
+      if(*(bf + i) != PID_NULL || *(bf + i + 1) == memAllocated) {
+        printf("END VOID, init: %d, end: %d\n", init, end);
         voids = pushVoids(voids, init, end);
         init = end = -1;
       }
@@ -279,11 +304,11 @@ void bestFit(unsigned pid, unsigned size) {
   match = getBestMatch(voids, size);
 
   if(match == NULL) {
-    puts("Não foi encontrado um espaço com First Fit");
+    puts("Não foi encontrado um espaço com Best Fit");
   } else {
     init = match->init;
     end = match->end;
-    for(int i = init; i <= end; i++) {
+    for(int i = init; i <= size || i <= end; i++) {
       *(ff + i) = pid;
     }
   }
@@ -338,7 +363,60 @@ void createProcess() {
  * Mata o processo
  */
 void killProcess() {
-  puts("Não implementado");
+  unsigned killPid = 0,
+    foundFF = 0,
+    foundBF = 0,
+    foundWF = 0,
+    foundNF = 0;
+
+  puts("Digite o PID do processo que quer matar:");
+  scanf("%d", &killPid);
+
+  for(unsigned i = 0; i < memAllocated; i++) {
+    if(*(ff + i) == killPid) {
+      foundFF = 1;
+      *(ff + i) = PID_NULL;
+    }
+
+    if(*(bf + i) == killPid) {
+      foundBF = 1;
+      *(bf + i) = PID_NULL;
+    }
+
+    if(*(wf + i) == killPid) {
+      foundWF = 1;
+      *(wf + i) = PID_NULL;
+    }
+
+    if(*(nf + i) == killPid) {
+      foundNF = 1;
+      *(nf + i) = PID_NULL;
+    }
+  }
+
+  if(foundFF) {
+    printf("[FIRST FIT] Processo de PID %u foi encontrado e morto com sucesso\n", killPid);
+  } else {
+    printf("[FIRST FIT] O processo de PID %u não foi encontrado\n", killPid);
+  }
+
+  if(foundBF) {
+    printf("[BEST FIT] Processo de PID %u foi encontrado e morto com sucesso\n", killPid);
+  } else {
+    printf("[BEST FIT] O processo de PID %u não foi encontrado\n", killPid);
+  }
+
+  if(foundWF) {
+    printf("[WORST FIT] Processo de PID %u foi encontrado e morto com sucesso\n", killPid);
+  } else {
+    printf("[WORST FIT] O processo de PID %u não foi encontrado\n", killPid);
+  }
+
+  if(foundNF) {
+    printf("[NEXT FIT] Processo de PID %u foi encontrado e morto com sucesso\n", killPid);
+  } else {
+    printf("[NEXT FIT] O processo de PID %u não foi encontrado\n", killPid);
+  }
 }
 
 /**
