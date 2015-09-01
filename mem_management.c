@@ -260,6 +260,27 @@ t_void *getBestMatch(t_void *voids, unsigned size) {
 }
 
 /**
+ * Pega o melhor buraco para encaixar o processo
+ * @param  voids Árvore de buracos
+ * @param  size  Tamanho do processo a ser encaixado
+ * @return       Buraco para ser colocado
+ */
+t_void *getWorstMatch(t_void *voids, unsigned size) {
+  t_void *actual = voids, *last = NULL;
+
+  if(actual == NULL) {
+    return NULL;
+  }
+
+  while(actual != NULL) {
+    last = actual;
+    actual = actual->right;
+  }
+
+  return last;
+}
+
+/**
  * Libera memória dos voids
  * @param voids ponteiro para a árvore
  */
@@ -337,6 +358,45 @@ void bestFit(unsigned pid, unsigned size) {
  * @param size Tamanho do processo
  */
 void worstFit(unsigned pid, unsigned size) {
+  int init = -1, end = -1;
+  unsigned found = 0;
+
+  t_void *voids = NULL, *match = NULL;
+
+  for (int i = 0; i < memAllocated; i++)
+  {
+    if(init == -1) {
+      if(*(wf + i) == PID_NULL) {
+        init = i;
+      }
+    } else {
+      end = i;
+      if(*(wf + i + 1) == memAllocated) {
+        voids = pushVoids(voids, init, end);
+        init = end = -1;
+      } else {
+        if(*(wf + i + 1) != PID_NULL) {
+          voids = pushVoids(voids, init, end);
+          init = end = -1;
+        }
+      }
+    }
+  }
+
+  match = getWorstMatch(voids, size);
+
+  if(match == NULL) {
+    puts("Não foi encontrado um espaço com Best Fit");
+  } else {
+    end = 0;
+    for(int i = match->init; end < size; i++) {
+      *(wf + i) = pid;
+      end++;
+    }
+  }
+
+  freeVoids(voids);
+  match = voids = NULL;
 }
 
 /**
