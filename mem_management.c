@@ -10,6 +10,15 @@ using namespace std;
  */
 #define PID_NULL 0
 
+struct void {
+  unsigned init;
+  unsigned end;
+  unsigned size;
+  struct void *next;
+};
+
+typedef struct void t_void;
+
 /**
  * Memórias para tipos diferentes de alocação de memória
  *
@@ -171,11 +180,116 @@ void firstFit(unsigned pid, unsigned size) {
 }
 
 /**
+ * Adiciona um buraco à lista encadeada de buracos
+ * @param  voids Lista encadeada de voids
+ * @param  init  posição inicial do buraco
+ * @param  end   posição final do buraco
+ * @return       ponteiros à lista de voids
+ */
+t_void *pushVoids(t_void *voids, unsigned init, unsigned end) {
+  t_void *newVoid = (t_void*) calloc(1, sizeof(t_void)), actualVoid = NULL;
+
+  if(newVoid == NULL) {
+    puts("Erro ao procurar os buracos");
+    return voids;
+  }
+
+  newVoid->init = init;
+  newVoid->end = end;
+  newVoid->size = end - init + 1;
+  newVoid->next = NULL;
+
+  if(voids == NULL) {
+    voids = newVoid;
+  } else {
+    actualVoid = voids;
+    while(actualVoid->next == NULL) {
+      actualVoid = actualVoid->next;
+    }
+
+    actualVoid->next = newVoid;
+  }
+
+  return voids;
+}
+
+void sortVoids(t_void *voids, t_void *lo, t_void *hi) {
+  pa
+
+  if(lo->size < hi->size) {
+
+  }
+
+}
+
+t_void *getLowest(t_void *voids) {
+  t_void *actual = voids;
+  unsigned lowest = voids->size;
+
+  while(actual->next != NULL) {
+    if(actual->size < lowest) {
+      lowest = actual->size;
+    }
+
+    actual = actual->next;
+  }
+
+  return actual;
+}
+
+t_void *getBestMatch(t_void *voids, unsigned size) {
+  sortVoids(voids, getLowest(voids), getBiggest(voids));
+
+  t_void *actual = voids;
+
+
+}
+
+/**
  * Faz o best fit do processo
  * @param pid  Pid do processo
  * @param size Tamanho do processo
  */
 void bestFit(unsigned pid, unsigned size) {
+  int init = -1, end = -1;
+  unsigned found = 0;
+
+  t_void *voids = NULL, *match = NULL;
+
+  for (int i = 0; i < memAllocated; i++)
+  {
+    if(init == -1) {
+      if(*(ff + i) == PID_NULL) {
+        init = i;
+        end = 1;
+      }
+    } else {
+      end++;
+      if(end == size) {
+        end = i;
+        found = 1;
+        break;
+      } else if(*(ff + i) != PID_NULL) {
+        voids = pushVoids(voids, init, end);
+        init = end = -1;
+      }
+    }
+  }
+
+  match = getBestMatch(voids, size);
+
+  if(match == NULL) {
+    puts("Não foi encontrado um espaço com First Fit");
+  } else {
+    init = match->init;
+    end = match->end;
+    for(int i = init; i <= end; i++) {
+      *(ff + i) = pid;
+    }
+  }
+
+  freeVoids(voids);
+  free(match);
 }
 
 /**
