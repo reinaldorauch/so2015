@@ -131,11 +131,93 @@ unsigned checkAllocated() {
   return 0;
 }
 
+
+/**
+ * Faz o first fit do processo
+ * @param pid  Pid do processo
+ * @param size Tamanho do processo
+ */
+void firstFit(unsigned pid, unsigned size) {
+  int init = -1, end = -1;
+  unsigned found = 0;
+
+  for (int i = 0; i < memAllocated; i++)
+  {
+    if(init == -1) {
+      if(*(ff + i) == PID_NULL) {
+        init = i;
+        end = 1;
+      }
+    } else {
+      end++;
+      if(end == size) {
+        end = i;
+        found = 1;
+        break;
+      } else if(*(ff + i) != PID_NULL) {
+        init = end = -1;
+      }
+    }
+  }
+
+  if(found) {
+    for(int i = init; i <= end; i++) {
+      *(ff + i) = pid;
+    }
+  } else {
+    puts("Não foi encontrado um espaço com First Fit");
+  }
+
+}
+
+/**
+ * Faz o best fit do processo
+ * @param pid  Pid do processo
+ * @param size Tamanho do processo
+ */
+void bestFit(unsigned pid, unsigned size) {
+}
+
+/**
+ * Faz o worst fit do processo
+ * @param pid  Pid do processo
+ * @param size Tamanho do processo
+ */
+void worstFit(unsigned pid, unsigned size) {
+}
+
+/**
+ * Faz o next fit do processo
+ * @param pid  Pid do processo
+ * @param size Tamanho do processo
+ */
+void nextFit(unsigned pid, unsigned size) {
+}
+
 /**
  * Cria um processo
  */
 void createProcess() {
-  puts("Não implementado");
+  unsigned size = 0;
+  pidCounter++;
+
+  puts("Criando um processo. Digite o tamanho do processo:");
+  scanf("%d", &size);
+
+  if(size == 0) {
+    puts("tamanho vazio, tente novamente");
+    return;
+  }
+
+  if(size > memAllocated) {
+    puts("Tamanho maior da memória alocada, não foi possível inserir. Tente novamente");
+    return;
+  }
+
+  firstFit(pidCounter, size);
+  bestFit(pidCounter, size);
+  worstFit(pidCounter, size);
+  nextFit(pidCounter, size);
 }
 
 /**
