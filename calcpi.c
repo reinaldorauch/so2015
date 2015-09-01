@@ -6,7 +6,7 @@
 
 #define ITERACOES 1000000000
 #define MICROFACTOR 1000000
-#define MAX_FORK 10
+#define MAX_FORK 0
 #define SHARED_MEMORY_KEY 6660999
 
 int resultPipe[2];
