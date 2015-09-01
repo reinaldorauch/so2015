@@ -40,6 +40,11 @@ unsigned memAllocated = 0;
 unsigned pidCounter = 0;
 
 /**
+ * Última alocação do next fit
+ */
+unsigned nextFitLastAllocation = 0;
+
+/**
  * Imprime o menu na tela
  */
 void menu(){
@@ -386,7 +391,7 @@ void worstFit(unsigned pid, unsigned size) {
   match = getWorstMatch(voids, size);
 
   if(match == NULL) {
-    puts("Não foi encontrado um espaço com Best Fit");
+    puts("Não foi encontrado um espaço com Worst Fit");
   } else {
     end = 0;
     for(int i = match->init; end < size; i++) {
@@ -405,6 +410,50 @@ void worstFit(unsigned pid, unsigned size) {
  * @param size Tamanho do processo
  */
 void nextFit(unsigned pid, unsigned size) {
+  int init = -1, end = -1, walk = 0;
+  unsigned found = 0;
+
+  for (int i = nextFitLastAllocation; walk < memAllocated; i++)
+  {
+    if(i == memAllocated) {
+      end = init = i = -1;
+      continue;
+    }
+
+    if(init == -1) {
+      if(*(nf + i) == PID_NULL) {
+        init = i;
+        end = 1;
+
+        if(size == 1) {
+          end = i;
+          found = 1;
+          break;
+        }
+      }
+    } else {
+      end++;
+      if(end == size) {
+        end = i;
+        found = 1;
+        break;
+      } else if(*(nf + i) != PID_NULL) {
+        init = end = -1;
+      }
+    }
+
+    walk++;
+  }
+
+  if(found) {
+    for(int i = init; i <= end; i++) {
+      *(nf + i) = pid;
+    }
+
+    nextFitLastAllocation = end;
+  } else {
+    puts("Não foi encontrado um espaço com Next Fit");
+  }
 }
 
 /**
