@@ -271,6 +271,7 @@ void freeVoids(t_void *voids) {
   freeVoids(voids->left);
   freeVoids(voids->right);
   free(voids);
+  voids = NULL;
 }
 
 void printVoids(t_void *voids){
@@ -278,9 +279,9 @@ void printVoids(t_void *voids){
     return;
   }
 
-  freeVoids(voids->left);
+  printVoids(voids->left);
   printf("Void -> init: %d, end: %d, size: %d\n", voids->init, voids->end, voids->size);
-  freeVoids(voids->right);
+  printVoids(voids->right);
 }
 
 /**
@@ -299,16 +300,15 @@ void bestFit(unsigned pid, unsigned size) {
     if(init == -1) {
       if(*(bf + i) == PID_NULL) {
         init = i;
-        end = 1;
       }
     } else {
-      end++;
+      end = i;
       if(*(bf + i + 1) == memAllocated) {
         voids = pushVoids(voids, init, end);
         init = end = -1;
       } else {
         if(*(bf + i + 1) != PID_NULL) {
-          voids = pushVoids(voids, init, end - 1);
+          voids = pushVoids(voids, init, end);
           init = end = -1;
         }
       }
@@ -320,15 +320,15 @@ void bestFit(unsigned pid, unsigned size) {
   if(match == NULL) {
     puts("Não foi encontrado um espaço com Best Fit");
   } else {
-    init = match->init;
-    end = match->end;
-    for(int i = init; i <= size || i <= end; i++) {
-      *(ff + i) = pid;
+    end = 0;
+    for(int i = match->init; end < size; i++) {
+      *(bf + i) = pid;
+      end++;
     }
   }
 
   freeVoids(voids);
-  free(match);
+  match = voids = NULL;
 }
 
 /**
