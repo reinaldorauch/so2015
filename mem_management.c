@@ -1,42 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <iostream>
+
+using namespace std;
 
 /**
  * Define um pid nulo, ou seja, um buraco na memória
  */
-#define PID_NULL = 0;
-
-/**
- * Se há memória alocada para a simulação ou não.
- * Guarda a quantidade de processos alocados
- */
-int memory_allocated = 0;
-
-/**
- * Estrutura de um processo, contendo seu pid e tamanho
- */
-struct process {
-  int pid;
-  int size;
-};
-
-/**
- * Definindo o tipo para os processos
- */
-typedef struct process t_process;
-
-/**
- * Estrutura para a memória
- */
-struct memory {
-  int max_size;
-  t_process *procs;
-};
-
-/**
- * Definindo o tipo para as memórias
- */
-typedef struct memory t_memory;
+#define PID_NULL 0
 
 /**
  * Memórias para tipos diferentes de alocação de memória
@@ -46,147 +18,17 @@ typedef struct memory t_memory;
  * wf -> Worst Fit
  * nf -> Next fit
  */
-t_memory ff, bf, wf, nf;
+unsigned *ff = NULL, *bf = NULL, *wf = NULL, *nf = NULL;
 
 /**
- * Aloca a quantidade de memória definida pelo usuário
+ * Tamanho da memória alocada
  */
-void alocateMemory() {
-  int nproc;
-  puts("\nDeseja alocar quanto de memória?");
-  scanf("%d", &nproc);
-
-  if(nproc < 1) {
-    puts("Quantidade inválida, tente novamente");
-    return;
-  }
-
-  ff.procs = (t_process*) calloc(1, sizeof(t_process));
-
-  if(ff.procs == NULL) {
-    puts("eroooo, falta de memória");
-    return;
-  }
-
-  ff.max_size = nproc;
-
-  bf.procs = (t_process*) calloc(1, sizeof(t_process));
-
-  if(bf.procs == NULL) {
-    puts("eroooo, falta de memória");
-    free(ff.procs);
-  }
-
-  bf.max_size = nproc;
-
-  wf.procs = (t_process*) calloc(1, sizeof(t_process));
-
-  if(wf.procs == NULL) {
-    puts("eroooo, falta de memória");
-    free(ff.procs);
-    free(bf.procs);
-  }
-
-  wf.max_size = nproc;
-
-  nf.procs = (t_process*) calloc(1, sizeof(t_process));
-
-  if(nf.procs == NULL) {
-    puts("eroooo, falta de memória");
-    free(ff.procs);
-    free(bf.procs);
-    free(wf.procs);
-  }
-
-  wf.max_size = nproc;
-
-  memory_allocated = 1;
-
-  puts("Memória alocada com sucesso");
-}
+unsigned memAllocated = 0;
 
 /**
- * Cria um processo a ser alocado nas memórias
+ * Contador de pid
  */
-void criar_processo() {
-
-  /*
-    code
-  */
-
-}
-
-/**
- * remove um processo nas memorias
- */
-void matar_processo() {
-
-  /*
-    code
-  */
-
-}
-
-/**
- * reinicia as memorias
- */
-void reset_processo() {
-
-  /*
-    code
-  */
-
-}
-
-/**
- * Imprime o processo na tela
- * @param proc Ponteiro para o processo no vetor
- */
-void printProcesso(t_process *proc) {
-  printf("PID: %8d, TAM: %8d", proc->pid, proc->size);
-}
-
-void printSepRow(int qtd) {
-  for (int i = 0; i < qtd; i++)
-  {
-    printf("+------------------------------");
-  }
-  puts("+");
-}
-
-void printMemory(t_process *procs) {
-  printSepRow(memory_allocated);
-  for (int i = 0; i < memory_allocated; i++)
-  {
-    printf("| ");
-    printProcesso((procs + (sizeof(t_process) * i)));
-    printf(" ");
-  }
-  puts("|");
-  printSepRow(memory_allocated);
-  puts("\n\n");
-}
-
-/**
- * exibe os processos das memorias
- */
-void visualizarMemorias() {
-  if(!memory_allocated) {
-    puts("Memórias não inicializadas, tente novamente");
-    return;
-  }
-
-  puts("Imprimindo as memórias");
-  puts("\n");
-  puts("First fit:");
-  printMemory(ff.procs);
-  puts("Best fit:");
-  printMemory(bf.procs);
-  puts("Worst fit:");
-  printMemory(wf.procs);
-  puts("Next fit:");
-  printMemory(nf.procs);
-}
+unsigned pidCounter = 0;
 
 /**
  * Imprime o menu na tela
@@ -218,54 +60,172 @@ void clearBuffer(FILE *fp) {
 }
 
 /**
- * Verifica se há memória alocada ou não
- * @return se há ou não memória alocada
+ * Aloca x de memória
+ * @return tamanho de memória alocada
  */
-int checkAllocated() {
-  if(memory_allocated) {
-    puts("Memória alocada");
-
-  } else {
-    puts("Memória não alocada");
+unsigned allocateMemory(unsigned size) {
+  if(size == 0) {
+    puts("Tamanho inválido. Tente novamente");
+    return 0;
   }
-  return memory_allocated;
+
+  ff = (unsigned*) calloc(size, sizeof(unsigned));
+
+  if(ff == NULL) {
+    puts("Erroooo, tente novamente");
+    return 0;
+  }
+
+  wf = (unsigned*) calloc(size, sizeof(unsigned));
+
+  if(wf == NULL) {
+    puts("Erroooo, tente novamente");
+    free(ff);
+    return 0;
+  }
+
+  bf = (unsigned*) calloc(size, sizeof(unsigned));
+
+  if(bf == NULL) {
+    puts("Erroooo, tente novamente");
+    free(ff);
+    free(wf);
+    return 0;
+  }
+
+  nf = (unsigned*) calloc(size, sizeof(unsigned));
+
+  if(nf == NULL) {
+    puts("Erroooo, tente novamente");
+    free(ff);
+    free(wf);
+    free(bf);
+    return 0;
+  }
+
+  return size;
 }
 
 /**
- * Desaloca os segmentos de memória alocada para a simulação
+ * Captura o tamanho da memória necessária a ser alocada
+ * @return o tamanho da memória alocada
+ */
+unsigned allocateMemory() {
+  unsigned size = 0;
+
+  puts("Digite o tamanho da memória a ser alocada (um inteiro):");
+
+  scanf("%u", &size);
+
+  return allocateMemory(size);
+}
+
+/**
+ * Verifica se a memória está alocada
+ */
+unsigned checkAllocated() {
+  if(!(ff == NULL && wf == NULL && bf == NULL && nf == NULL)) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/**
+ * Cria um processo
+ */
+void createProcess() {
+  puts("Não implementado");
+}
+
+/**
+ * Mata o processo
+ */
+void killProcess() {
+  puts("Não implementado");
+}
+
+/**
+ * Imprime a linha separadora
+ * @param padding tamanho da linha
+ */
+void printSeparator(unsigned padding){
+
+  for (int i = 0; i < padding; i++)
+  {
+    printf("+------------");
+  }
+  puts("+");
+
+}
+
+/**
+ * Imprime uma memória na tela
+ * @param memory a memória a ser impressa
+ */
+void printMemory(unsigned *memory) {
+
+  printSeparator(memAllocated);
+
+  for (int i = 0; i < memAllocated; i++)
+  {
+    printf("| %10u ", *(memory + i));
+  }
+  puts("|");
+
+  printSeparator(memAllocated);
+
+}
+
+/**
+ * Imprime a representação das memórias na tela
+ */
+void printMemories() {
+
+  puts("First fit:");
+  printMemory(ff);
+
+  puts("Best fit:");
+  printMemory(bf);
+
+  puts("Worst fit:");
+  printMemory(wf);
+
+  puts("Next fit:");
+  printMemory(nf);
+
+}
+
+/**
+ * Desaloca as memórias
  */
 void deallocateMemory() {
-
-  memory_allocated = 0;
-
-  free(ff.procs);
-  ff.procs = NULL;
-
-  free(bf.procs);
-  bf.procs = NULL;
-
-  free(wf.procs);
-  wf.procs = NULL;
-
-  free(nf.procs);
-  nf.procs = NULL;
-
-  puts("Memórias desalocadas com sucesso");
-
+  puts("Deallocating memories");
+  free(ff);
+  free(wf);
+  free(bf);
+  free(nf);
+  ff = wf = bf = nf = NULL;
+  puts("Done.");
 }
 
-void reiniciarMemorias() {
+/**
+ * Limpa as memórias
+ */
+void clearMemories() {
+
+  puts("Limpando memórias");
   deallocateMemory();
+  allocateMemory(memAllocated);
+  puts("Done.");
+
 }
 
-void initMemories() {
-  nf.max_size = wf.max_size = bf.max_size = ff.max_size = 0;
-  nf.procs = wf.procs = bf.procs = ff.procs = NULL;
-}
-
+/**
+ * Main program
+ * @return Exit estate
+ */
 int main() {
-
-  initMemories();
 
   char option;
 
@@ -277,27 +237,47 @@ int main() {
     clearBuffer(stdin);
 
     switch(option) {
+      // Opção de alocar a memória
       case '0':
-        alocateMemory();
+        if(checkAllocated()) {
+          puts("Memória já alocada, desaloque-a e tente novamente");
+          break;
+        }
+        memAllocated = allocateMemory();
         break;
+      // Opção de criar um processo
       case '1':
         if(!checkAllocated()) {
+          puts("Memória não alocada, aloque-a e tente novamente");
           break;
         }
-        criar_processo();
+        createProcess();
         break;
+      // Opção de matar um processo
       case '2':
         if(!checkAllocated()) {
+          puts("Memória não alocada, aloque-a e tente novamente");
           break;
         }
-        matar_processo();
+        killProcess();
         break;
+      // Imprime as memórias na tela
       case '3':
-        visualizarMemorias();
+        if(!checkAllocated()) {
+          puts("Memória não alocada, aloque-a e tente novamente");
+          break;
+        }
+        printMemories();
         break;
+      // Opção de limpar as memórias
       case '4':
-        reiniciarMemorias();
+        if(!checkAllocated()) {
+          puts("Memória não alocada, aloque-a e tente novamente");
+          break;
+        }
+        clearMemories();
         break;
+      // Opção de sair do programa
       case '9':
         puts("Sayonara");
         if(checkAllocated()) {
@@ -312,5 +292,5 @@ int main() {
     }
   }
 
-  return 0;
+  return 1;
 }
