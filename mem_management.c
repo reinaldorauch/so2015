@@ -273,6 +273,16 @@ void freeVoids(t_void *voids) {
   free(voids);
 }
 
+void printVoids(t_void *voids){
+  if(voids == NULL) {
+    return;
+  }
+
+  freeVoids(voids->left);
+  printf("Void -> init: %d, end: %d, size: %d\n", voids->init, voids->end, voids->size);
+  freeVoids(voids->right);
+}
+
 /**
  * Faz o best fit do processo
  * @param pid  Pid do processo
@@ -293,10 +303,14 @@ void bestFit(unsigned pid, unsigned size) {
       }
     } else {
       end++;
-      if(*(bf + i) != PID_NULL || *(bf + i + 1) == memAllocated) {
-        printf("END VOID, init: %d, end: %d\n", init, end);
+      if(*(bf + i + 1) == memAllocated) {
         voids = pushVoids(voids, init, end);
         init = end = -1;
+      } else {
+        if(*(bf + i + 1) != PID_NULL) {
+          voids = pushVoids(voids, init, end - 1);
+          init = end = -1;
+        }
       }
     }
   }
