@@ -77,6 +77,7 @@ double copy1mbyte() {
 
     gettimeofday(&start, NULL);
     copy(FILE_1_MBYTE, FILE_VOID);
+
     gettimeofday(&finish, NULL);
 
     runtime = getDiffTime(start, finish);
@@ -105,11 +106,21 @@ int main() {
     int i;
     double media = 0.0;
 
+    /**
+     * 1B Run
+     */
+
     for (i = 0; i < NUM_RUNS; i++) {
         media += copy1byte();
     }
 
     printf("Averages for 1 byte and %d runs: %.10f\n", NUM_RUNS, media / NUM_RUNS);
+
+    /**
+     * 1KB Run
+     */
+
+    media = 0.0;
 
     for (i = 0; i < NUM_RUNS; i++) {
         media += copy1kbyte();
@@ -117,11 +128,23 @@ int main() {
 
     printf("Averages for 1 kbyte and %d runs: %.10f\n", NUM_RUNS, media / NUM_RUNS);
 
+    /**
+     * 1MB Run
+     */
+
+    media = 0.0;
+
     for (i = 0; i < NUM_RUNS; i++) {
         media += copy1mbyte();
     }
 
     printf("Averages for 1 mbyte and %d runs: %.10f\n", NUM_RUNS, media / NUM_RUNS);
+
+    /**
+     * 20MB Run
+     */
+
+    media = 0.0;
 
     for (i = 0; i < NUM_RUNS; i++) {
         media += copy20mbyte();
