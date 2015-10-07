@@ -190,6 +190,16 @@ void firstFit(unsigned pid, unsigned size) {
 
 }
 
+void printVoids(t_void *voids){
+  if(voids == NULL) {
+    return;
+  }
+
+  printVoids(voids->left);
+  printf("Void -> init: %d, end: %d, size: %d\n", voids->init, voids->end, voids->size);
+  printVoids(voids->right);
+}
+
 /**
  * Adiciona um buraco à lista encadeada de buracos
  * @param  voids Lista encadeada de voids
@@ -211,6 +221,8 @@ t_void *pushVoids(t_void *voids, unsigned init, unsigned end) {
   newVoid->end = end;
   newVoid->size = end - init + 1;
   newVoid->right = newVoid->left = NULL;
+
+  printVoids(newVoid);
 
   if(voids == NULL) {
     voids = newVoid;
@@ -298,16 +310,6 @@ void freeVoids(t_void *voids) {
   freeVoids(voids->right);
   free(voids);
   voids = NULL;
-}
-
-void printVoids(t_void *voids){
-  if(voids == NULL) {
-    return;
-  }
-
-  printVoids(voids->left);
-  printf("Void -> init: %d, end: %d, size: %d\n", voids->init, voids->end, voids->size);
-  printVoids(voids->right);
 }
 
 /**
@@ -550,7 +552,7 @@ void printSeparator(unsigned padding){
 
   for (int i = 0; i < padding; i++)
   {
-    printf("+------------");
+    printf("+----");
   }
   puts("+");
 
@@ -566,7 +568,7 @@ void printMemory(unsigned *memory) {
 
   for (int i = 0; i < memAllocated; i++)
   {
-    printf("| %10u ", *(memory + i));
+    printf("| %2u ", *(memory + i));
   }
   puts("|");
 
