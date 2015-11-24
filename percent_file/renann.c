@@ -7,12 +7,18 @@
 #include <dirent.h>
 
 int main(int argc, char const *argv[]) {
+    /**
+     * Declaração das variáveis
+     */
+
+    // Diretório aberto
     DIR *dirstream;
+
+    // Ponteiro para as entradas de diretório
     struct dirent *direntry;
-    char buffer[50] = "./";
-    int i = 0,
-        unk = 0,
-        wht = 0,
+
+    // Declaração das variáveis auxiliares
+    int unk = 0,
         diretorio = 0,
         fifo = 0,
         socket = 0,
@@ -20,15 +26,20 @@ int main(int argc, char const *argv[]) {
         cd = 0,
         link = 0,
         aux = 0,
-        tipo,
         reg = 0;
 
+    /**
+     * Verificação da utilização do argumento ou não
+     */
     if (argc == 2) {
         dirstream = opendir(argv[1]);
     } else {
-        dirstream = opendir(buffer);
+        dirstream = opendir("./");
     }
 
+    /**
+     * Varredura do diretório definido no passo anterior
+     */
     while(direntry = readdir(dirstream)) {
         printf("%20s -> type: ", direntry->d_name);
         aux++;
@@ -81,7 +92,7 @@ int main(int argc, char const *argv[]) {
     printf("Arquivo tipo diretorio    = %3d%% (total = %d, type = %d)\n", (diretorio * 100) / aux, aux, diretorio);
     printf("Arquivo tipo fifo         = %3d%% (total = %d, type = %d)\n", (fifo * 100) / aux, aux, fifo);
     printf("Arquivo tipo socket       = %3d%% (total = %d, type = %d)\n", (socket * 100) / aux, aux, socket);
-    printf("Arquivo tipo cd           = %3d%% (total = %d, type = %d)\n", (cd * 100) / aux, aux, cd);
+    printf("Arquivo tipo caracter     = %3d%% (total = %d, type = %d)\n", (cd * 100) / aux, aux, cd);
     printf("Arquivo tipo bloco        = %3d%% (total = %d, type = %d)\n", (bloco * 100) / aux, aux, bloco);
     printf("Arquivo tipo link         = %3d%% (total = %d, type = %d)\n", (link * 100) / aux, aux, link);
     return 0;
